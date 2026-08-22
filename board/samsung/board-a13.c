@@ -49,7 +49,7 @@ void pmic_init(void)
 	void *mailbox_base = (void *)EXYNOS_MAILBOX_AP2APM;
 
 	spmi_read(mailbox_base, MAIN_PMIC_ID, S2MPU12_PM_ADDR, S2MPU12_PMIC_B2CTRL, &reg); /* buck 2 */
-	reg = S2MPU12_REG_ENABLE + (900000 - S2MPU12_BUCK_MIN1) / S2MPU12_BUCK_STEP1;	/* 0.9V/900,000 uV */
+	reg = S2MPU12_REG_ENABLE + (1150000 - S2MPU12_BUCK_MIN1) / S2MPU12_BUCK_STEP1;	/* 1.15V/1150000 uV */
 	spmi_write(mailbox_base, MAIN_PMIC_ID, S2MPU12_PM_ADDR, S2MPU12_PMIC_B2CTRL, reg);
 
         spmi_read(mailbox_base, MAIN_PMIC_ID, S2MPU12_PM_ADDR, S2MPU12_PMIC_L28CTRL, &reg); /* ldo 28 */

@@ -55,6 +55,10 @@ void pmic_init(void)
         spmi_read(mailbox_base, MAIN_PMIC_ID, S2MPU12_PM_ADDR, S2MPU12_PMIC_L28CTRL, &reg); /* ldo 28 */
         reg = S2MPU12_REG_ENABLE + (1800000 - S2MPU12_LDO_MIN4) / S2MPU12_LDO_STEP4;   /* 1.8V/1800000 uV */
         spmi_write(mailbox_base, MAIN_PMIC_ID, S2MPU12_PM_ADDR, S2MPU12_PMIC_L28CTRL, reg);
+
+        spmi_read(mailbox_base, MAIN_PMIC_ID, S2MPU12_PM_ADDR, S2MPU12_PMIC_L31CTRL, &reg); /* ldo 31 */
+        reg = S2MPU12_REG_ENABLE + (5000000 - S2MPU12_LDO_MIN5) / S2MPU12_LDO_STEP5;   /* 3V/3000000 uV */
+        spmi_write(mailbox_base, MAIN_PMIC_ID, S2MPU12_PM_ADDR, S2MPU12_PMIC_L31CTRL, reg);
 }
 
 int a13_init(void)

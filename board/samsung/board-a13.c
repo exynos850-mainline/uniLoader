@@ -18,6 +18,9 @@
 #define S2MPU12_REG_ENABLE		(0x03 << 0x06)
 #define S2MPU12_PM_ADDR                 0x1
 
+#define S2MPU12_VOLT_TO_REG(uV, min_uV, step_uV) \
+        (S2MPU12_REG_ENABLE | ((((uV) - (min_uV)) / (step_uV)) & 0x3F))
+
 /* BUCK 1M_2M_3M */
 #define S2MPU12_BUCK_MIN1		300000
 #define S2MPU12_BUCK_STEP1		6250
@@ -48,17 +51,14 @@ void pmic_init(void)
 	unsigned char reg;
 	void *mailbox_base = (void *)EXYNOS_MAILBOX_AP2APM;
 
-	spmi_read(mailbox_base, MAIN_PMIC_ID, S2MPU12_PM_ADDR, S2MPU12_PMIC_B2CTRL, &reg); /* buck 2 */
-	reg = S2MPU12_REG_ENABLE + (1150000 - S2MPU12_BUCK_MIN1) / S2MPU12_BUCK_STEP1;	/* 1.15V/1150000 uV */
-	spmi_write(mailbox_base, MAIN_PMIC_ID, S2MPU12_PM_ADDR, S2MPU12_PMIC_B2CTRL, reg);
+	reg = S2MPU12_VOLT_TO_REG(1150000, S2MPU12_BUCK_MIN1, S2MPU12_BUCK_STEP1); /* 1.15V (1150000 uV) */
+	spmi_write(mailbox_base, MAIN_PMIC_ID, S2MPU12_PM_ADDR, S2MPU12_PMIC_B2CTRL, reg); /* BUCK 2 */
 
-        spmi_read(mailbox_base, MAIN_PMIC_ID, S2MPU12_PM_ADDR, S2MPU12_PMIC_L28CTRL, &reg); /* ldo 28 */
-        reg = S2MPU12_REG_ENABLE + (1800000 - S2MPU12_LDO_MIN4) / S2MPU12_LDO_STEP4;   /* 1.8V/1800000 uV */
-        spmi_write(mailbox_base, MAIN_PMIC_ID, S2MPU12_PM_ADDR, S2MPU12_PMIC_L28CTRL, reg);
+	reg = S2MPU12_VOLT_TO_REG(1800000, S2MPU12_LDO_MIN4, S2MPU12_LDO_STEP4); /* 1.8V (1800000 uV) */
+	spmi_write(mailbox_base, MAIN_PMIC_ID, S2MPU12_PM_ADDR, S2MPU12_PMIC_L28CTRL, reg); /* LDO 28 */
 
-        spmi_read(mailbox_base, MAIN_PMIC_ID, S2MPU12_PM_ADDR, S2MPU12_PMIC_L31CTRL, &reg); /* ldo 31 */
-        reg = S2MPU12_REG_ENABLE + (5000000 - S2MPU12_LDO_MIN5) / S2MPU12_LDO_STEP5;   /* 3V/3000000 uV */
-        spmi_write(mailbox_base, MAIN_PMIC_ID, S2MPU12_PM_ADDR, S2MPU12_PMIC_L31CTRL, reg);
+	reg = S2MPU12_VOLT_TO_REG(3000000, S2MPU12_LDO_MIN5, S2MPU12_LDO_STEP5); /* 3.0V (3000000uV) */
+	spmi_write(mailbox_base, MAIN_PMIC_ID, S2MPU12_PM_ADDR, S2MPU12_PMIC_L31CTRL, reg); /* LDO 31 */
 }
 
 int a13_init(void)
